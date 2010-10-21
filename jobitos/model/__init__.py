@@ -30,7 +30,7 @@ people_table = sa.Table('people', Base.metadata,
     sa.Column('email_sms', sa.String(parameter.EMAIL_LENGTH_MAXIMUM)),
     sa.Column('minutes_offset', sa.Integer, default=0),
     sa.Column('rejection_count', sa.Integer, default=0),
-    sa.Column('pickled', sa.LargeBinary),
+    sa.Column('is_super', sa.Boolean, default=False),
 )
 person_candidates_table = sa.Table('person_candidates', Base.metadata,
     sa.Column('id', sa.Integer, primary_key=True),
@@ -42,6 +42,14 @@ person_candidates_table = sa.Table('person_candidates', Base.metadata,
     sa.Column('ticket', sa.String(parameter.TICKET_LENGTH), unique=True, nullable=False),
     sa.Column('when_expired', sa.DateTime, nullable=False),
     sa.Column('person_id', sa.ForeignKey('people.id')),
+)
+jobs_table = sa.Table('jobs', Base.metadata,
+    sa.Column('id', sa.Integer, primary_key=True),
+    sa.Column('title', sa.Unicode(parameter.TITLE_LENGTH_MAXIMUM), nullable=False),
+    sa.Column('budget', sa.Integer, nullable=False),
+    sa.Column('description', sa.UnicodeText, nullable=False),
+    sa.Column('when_updated', sa.DateTime, nullable=False),
+    sa.Column('owner_id', sa.ForeignKey('people.id')),
 )
 
 
@@ -66,6 +74,12 @@ class PersonCandidate(Person):
         return "<PersonCandidate('%s')>" % self.username
 
 
+class Job(object):
+
+    def __repr__(self):
+        return "<Job('%s')>" % self.id
+
+
 class CaseInsensitiveComparator(orm.properties.ColumnProperty.Comparator):
 
     def __eq__(self, other):
@@ -81,3 +95,6 @@ orm.mapper(Person, people_table, properties={
     'email_sms': orm.column_property(people_table.c.email_sms, comparator_factory=CaseInsensitiveComparator),
 })
 orm.mapper(PersonCandidate, person_candidates_table)
+orm.mapper(Job, jobs_table, properties={
+    'owner': orm.relation(Person, backref='jobs'), 
+})

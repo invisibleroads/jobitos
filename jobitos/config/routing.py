@@ -27,7 +27,12 @@ def make_map(config):
     map.connect('person_logout_plain', '/people/logout', controller='people', action='logout') 
     map.connect('person_logout', '/people/logout/{targetURL}', controller='people', action='logout')
     map.connect('person_reset', '/people/reset', controller='people', action='reset')
+    # Map jobs
+    map.connect('job_index', '/jobs', controller='jobs', action='index')
+    map.connect('job_register', '/jobs/register', controller='jobs', action='register')
+    map.connect('job_register_', '/jobs/register_', controller='jobs', action='register_')
+    map.connect('job_show', '/jobs/{jobID}', controller='jobs', action='show')
     # Redirect index
-    map.redirect('/', '/people')
+    map.redirect('/', '/jobs')
     # Return
     return map

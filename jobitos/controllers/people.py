@@ -32,7 +32,7 @@ class PeopleController(BaseController):
     @jsonify
     def register_(self):
         'Store proposed changes and send confirmation email'
-        return changeAccount(dict(request.POST), 'registration', '/people/confirm.mako')
+        return changePerson(dict(request.POST), 'registration', '/people/confirm.mako')
 
     def confirm(self, ticket):
         'Confirm changes'
@@ -76,7 +76,7 @@ class PeopleController(BaseController):
         # Prepare
         person = Session.query(model.Person).get(personID)
         # Return
-        return changeAccount(dict(request.POST), 'update', '/people/confirm.mako', person)
+        return changePerson(dict(request.POST), 'update', '/people/confirm.mako', person)
 
     def login(self, targetURL=h.encodeURL('/')):
         'Show login form'
@@ -119,6 +119,7 @@ class PeopleController(BaseController):
         session['minutesOffset'] = minutesOffset
         session['personID'] = person.id
         session['nickname'] = person.nickname
+        session['is_super'] = person.is_super
         session.save()
         # Save person
         person.minutes_offset = minutesOffset
@@ -134,6 +135,7 @@ class PeopleController(BaseController):
             del session['minutesOffset']
             del session['personID']
             del session['nickname']
+            del session['is_super']
             session.save()
         # Redirect
         return redirect(url(h.decodeURL(targetURL)))
@@ -150,7 +152,7 @@ class PeopleController(BaseController):
             return dict(isOk=0)
         # Reset account
         c.password = store.makeRandomAlphaNumericString(parameter.PASSWORD_LENGTH_AVERAGE)
-        return changeAccount(dict(
+        return changePerson(dict(
             username=person.username,
             password=c.password,
             nickname=person.nickname,
@@ -229,7 +231,7 @@ class PersonForm(formencode.Schema):
 
 # Helpers
 
-def changeAccount(valueByName, action, templatePath, person=None):
+def changePerson(valueByName, action, templatePath, person=None):
     'Validate values and send confirmation email if values are okay'
     try:
         # Validate form

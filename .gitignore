@@ -1,0 +1,3 @@
+*.pyc
+*.db
+production.ini

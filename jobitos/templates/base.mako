@@ -32,6 +32,7 @@ $(document).ready(function() {
 ${self.navigation()}
 <%
 linkPacks = [
+    ('Jobs', h.url('job_index')),
     ('People', h.url('person_index')),
 ]
 %>\
