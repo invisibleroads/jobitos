@@ -1,7 +1,7 @@
 'Tests for whenIO'
 import datetime
 
-from jobitos.libraries import whenIO
+from jobitos.lib import whenIO
 
 
 # Setup
